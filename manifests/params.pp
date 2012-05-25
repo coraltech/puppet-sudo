@@ -3,6 +3,8 @@ class sudo::params {
 
   #-----------------------------------------------------------------------------
 
+  $permissions  = [ '%admin ALL=(ALL) ALL' ]
+
   $visudo_bin   = '/usr/sbin/visudo'
   $sudoers      = '/etc/sudoers'
 

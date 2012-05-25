@@ -10,7 +10,10 @@
 #
 # Parameters:
 #
-#   $permissions = [ '%admin ALL=(ALL) ALL' ]
+#   $permissions  = $sudo::params::permissions,
+#   $visudo_bin   = $sudo::params::visudo_bin,
+#   $sudoers      = $sudo::params::sudoers,
+#   $sudoers_path = $sudo::params::sudoers_path
 #
 # Actions:
 #
@@ -25,23 +28,40 @@
 #   }
 #
 # [Remember: No empty lines between comments and class definition]
-class sudo ( $permissions = [ '%admin ALL=(ALL) ALL' ] ) {
+class sudo (
 
-  include sudo::params
+  $permissions  = $sudo::params::permissions,
+  $visudo_bin   = $sudo::params::visudo_bin,
+  $sudoers      = $sudo::params::sudoers,
+  $sudoers_path = $sudo::params::sudoers_path
+)
+inherits sudo::params {
 
   #-----------------------------------------------------------------------------
 
   file { '/tmp/sudoers':
-    owner  => 'root',
-    group  => 'root',
-    mode   => 440,
-    source => template('sudo/sudoers.erb'),
-    notify => Exec['check-sudoers'],
+    owner       => 'root',
+    group       => 'root',
+    mode        => 440,
+    content     => template('sudo/sudoers.erb'),
+    notify      => Exec['check-sudoers'],
   }
 
   exec { 'check-sudoers':
-    command     => "${sudo::params::visudo_bin} -cf /tmp/sudoers && cp /tmp/sudoers ${sudo::params::sudoers}; rm -f /tmp/sudoers",
-    refreshonly => true,
-    creates     => $sudo::params::sudoers,
+    command  => "${visudo_bin} -cf /tmp/sudoers",
+  }
+
+  file { $sudoers:
+    owner     => 'root',
+    group     => 'root',
+    mode      => 440,
+    source    => '/tmp/sudoers',
+    subscribe => Exec['check-sudoers'],
+    notify    => Exec['remove-tmp'],
+  }
+
+  exec { 'remove-tmp':
+    command => 'rm -f /tmp/sudoers',
+    path    => [ '/bin', '/usr/bin' ],
   }
 }
