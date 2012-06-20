@@ -33,13 +33,14 @@ class sudo (
   $permissions  = $sudo::params::permissions,
   $visudo_bin   = $sudo::params::visudo_bin,
   $sudoers      = $sudo::params::sudoers,
+  $sudoers_test = $sudo::params::sudoers_test,
   $sudoers_path = $sudo::params::sudoers_path
-)
-inherits sudo::params {
+
+) inherits sudo::params {
 
   #-----------------------------------------------------------------------------
 
-  file { '/tmp/sudoers':
+  file { $sudoers_test:
     owner       => 'root',
     group       => 'root',
     mode        => 440,
@@ -48,20 +49,16 @@ inherits sudo::params {
   }
 
   exec { 'check-sudoers':
-    command  => "${visudo_bin} -cf /tmp/sudoers",
+    command     => "${visudo_bin} -cf ${sudoers_test}",
+    subscribe   => File[$sudoers_test],
+    refreshonly => true,
   }
 
   file { $sudoers:
     owner     => 'root',
     group     => 'root',
     mode      => 440,
-    source    => '/tmp/sudoers',
+    source    => $sudoers_test,
     subscribe => Exec['check-sudoers'],
-    notify    => Exec['remove-tmp'],
-  }
-
-  exec { 'remove-tmp':
-    command => 'rm -f /tmp/sudoers',
-    path    => [ '/bin', '/usr/bin' ],
   }
 }
