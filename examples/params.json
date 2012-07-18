@@ -1,0 +1,3 @@
+{
+  "sudo_permissions" : [ "%admin ALL=(ALL) ALL" ]
+}

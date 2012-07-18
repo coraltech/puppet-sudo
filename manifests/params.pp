@@ -1,18 +1,33 @@
 
 class sudo::params {
 
+  include sudo::default
+
   #-----------------------------------------------------------------------------
+  # General configurations
 
-  $permissions  = [ '%admin ALL=(ALL) ALL' ]
+  if $::hiera_exists {
+    $permissions = hiera('sudo_permissions', $sudo::default::permissions)
+  }
+  else {
+    $permissions = $sudo::default::permissions
+  }
 
-  $visudo_bin   = '/usr/sbin/visudo'
-  $sudoers      = '/etc/sudoers'
-  $sudoers_test = '/etc/sudoers.test'
-
-  $sudoers_path = '/etc/sudoers.d'
+  #-----------------------------------------------------------------------------
+  # Operating system specific configurations
 
   case $::operatingsystem {
-    debian, ubuntu: {}
-    centos, redhat: {}
+    debian, ubuntu: {
+      $os_visudo_bin        = '/usr/sbin/visudo'
+      $os_sudoers_file      = '/etc/sudoers'
+      $os_sudoers_test_file = '/etc/sudoers.test'
+
+      $os_sudoers_template  = 'sudo/sudoers.erb'
+
+      $os_sudoers_dir       = '/etc/sudoers.d'
+    }
+    default: {
+      fail("The sudo module is not currently supported on ${::operatingsystem}")
+    }
   }
 }

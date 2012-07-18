@@ -2,18 +2,13 @@
 #
 #   This module configures sudoers permissions.
 #
-#   Adrian Webb <adrian.webb@coraltg.com>
+#   Adrian Webb <adrian.webb@coraltech.net>
 #   2012-05-22
 #
 #   Tested platforms:
 #    - Ubuntu 12.04
 #
-# Parameters:
-#
-#   $permissions  = $sudo::params::permissions,
-#   $visudo_bin   = $sudo::params::visudo_bin,
-#   $sudoers      = $sudo::params::sudoers,
-#   $sudoers_path = $sudo::params::sudoers_path
+# Parameters: (see <examples/params.json> for Hiera configurations)
 #
 # Actions:
 #
@@ -30,35 +25,39 @@
 # [Remember: No empty lines between comments and class definition]
 class sudo (
 
-  $permissions  = $sudo::params::permissions,
-  $visudo_bin   = $sudo::params::visudo_bin,
-  $sudoers      = $sudo::params::sudoers,
-  $sudoers_test = $sudo::params::sudoers_test,
-  $sudoers_path = $sudo::params::sudoers_path
+  $permissions       = $sudo::params::permissions,
+  $visudo_bin        = $sudo::params::os_visudo_bin,
+  $sudoers_file      = $sudo::params::os_sudoers_file,
+  $sudoers_test_file = $sudo::params::os_sudoers_test_file,
+  $sudoers_dir       = $sudo::params::os_sudoers_dir,
+  $sudoers_template  = $sudo::params::os_sudoers_template,
 
 ) inherits sudo::params {
 
   #-----------------------------------------------------------------------------
+  # Configuration
 
-  file { $sudoers_test:
+  file { 'sudoers-test-file':
+    path        => $sudoers_test_file,
     owner       => 'root',
     group       => 'root',
     mode        => 440,
-    content     => template('sudo/sudoers.erb'),
+    content     => template($sudoers_template),
     notify      => Exec['check-sudoers'],
   }
 
   exec { 'check-sudoers':
-    command     => "${visudo_bin} -cf ${sudoers_test}",
-    subscribe   => File[$sudoers_test],
+    command     => "${visudo_bin} -cf ${sudoers_test_file}",
+    subscribe   => File['sudoers-test-file'],
     refreshonly => true,
   }
 
-  file { $sudoers:
+  file { 'sudoers':
+    path      => $sudoers_file,
     owner     => 'root',
     group     => 'root',
     mode      => 440,
-    source    => $sudoers_test,
+    source    => $sudoers_test_file,
     subscribe => Exec['check-sudoers'],
   }
 }
