@@ -6,7 +6,7 @@ class sudo::params {
   #-----------------------------------------------------------------------------
   # General configurations
 
-  if $::hiera_exists {
+  if $::hiera_ready {
     $permissions = hiera('sudo_permissions', $sudo::default::permissions)
   }
   else {
