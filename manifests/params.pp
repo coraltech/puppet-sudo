@@ -7,7 +7,7 @@ class sudo::params {
   # General configurations
 
   if $::hiera_ready {
-    $permissions = hiera('sudo_permissions', $sudo::default::permissions)
+    $permissions = hiera_array('sudo_permissions', $sudo::default::permissions)
   }
   else {
     $permissions = $sudo::default::permissions
