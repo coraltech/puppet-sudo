@@ -26,11 +26,11 @@
 class sudo (
 
   $permissions       = $sudo::params::permissions,
-  $visudo_bin        = $sudo::params::os_visudo_bin,
-  $sudoers_file      = $sudo::params::os_sudoers_file,
-  $sudoers_test_file = $sudo::params::os_sudoers_test_file,
-  $sudoers_dir       = $sudo::params::os_sudoers_dir,
-  $sudoers_template  = $sudo::params::os_sudoers_template,
+  $visudo_bin        = $sudo::params::visudo_bin,
+  $sudoers_dir       = $sudo::params::sudoers_dir,
+  $sudoers_file      = $sudo::params::sudoers_file,
+  $sudoers_test_file = $sudo::params::sudoers_test_file,
+  $sudoers_template  = $sudo::params::sudoers_template,
 
 ) inherits sudo::params {
 
