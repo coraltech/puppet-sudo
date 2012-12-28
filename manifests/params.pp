@@ -1,6 +1,9 @@
 
 class sudo::params inherits sudo::default {
 
+  $exempt_group      = module_param('exempt_group')
+  $secure_path       = module_param('secure_path')
+
   $visudo_bin        = module_param('visudo_bin')
 
   $sudoers_dir       = module_param('sudoers_dir')

@@ -25,6 +25,8 @@
 # [Remember: No empty lines between comments and class definition]
 class sudo (
 
+  $exempt_group      = $sudo::params::exempt_group,
+  $secure_path       = $sudo::params::secure_path,
   $permissions       = $sudo::params::permissions,
   $visudo_bin        = $sudo::params::visudo_bin,
   $sudoers_dir       = $sudo::params::sudoers_dir,
