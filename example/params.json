@@ -1,4 +1,4 @@
 {
-  "exempt_group" : "admin",
+  "sudo_exempt_group" : "admin",
   "sudo_permissions" : [ "%admin ALL=(ALL) ALL" ]
 }
